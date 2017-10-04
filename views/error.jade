@@ -1,0 +1,9 @@
+extends layout
+
+block content
+  div(class="mdl-shadow--2dp mdl-cell mdl-cell--12-col mdl-color--white cpa-contentpage")
+    h2= message
+    h3= error.status
+    pre #{error.stack}
+    p
+      | You may need to <a href="/login">log in.</a>

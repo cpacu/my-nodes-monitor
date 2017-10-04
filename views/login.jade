@@ -1,0 +1,12 @@
+extends layout
+
+block content
+  div(class="mdl-shadow--2dp mdl-cell mdl-cell--12-col mdl-color--white cpa-contentpage")
+    h3= title
+    p Welcome to #{title}
+    form(class="form-signin",method="post")
+      |<div class="mdl-textfield mdl-js-textfield">
+      |  <input class="form-control mdl-textfield__input" type="text" id="inputKey" name="inputKey" required>
+      |  <label class="mdl-textfield__label" for="sample1">Authentication Key</label>
+      |</div>
+      |<button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
