@@ -1,0 +1,281 @@
+<!-- Feels like average -->
+<div
+	class="demo-card-square mdl-card mdl-shadow--2dp mdl-cell mdl-cell--4-col node-feelslike">
+	<div class="mdl-card__title">
+		<h2 class="mdl-card__title-text node-name">Feels like</h2>
+		<div class="mdl-layout-spacer"></div>
+		<button
+			class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon"
+			id="node-4-morebtn">
+			<i class="material-icons">more_vert</i>
+		</button>
+		<ul
+			class="mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect"
+			for="node-4-morebtn">
+			<li class="mdl-menu__item">Notifications</li>
+		</ul>
+	</div>
+	<div class="mdl-card__supporting-text mdl-card--expand cpa-thermometer">
+		<div
+			class="mdl-typography--headline mdl-color-text--light-green-500 cpa-degrees topic-1">N/A
+		</div>
+		<div class="mdl-typography--subheading mdl-typography--text-right">
+			Set: <span class="mdl-color-text--blue-700 desiredtemperature">N/A</span>
+			<br>
+			<button id="dlg-temperature-show-dialog"
+				class="mdl-button mdl-js-button mdl-button--fab mdl-button--mini-fab">
+				<i class="material-icons">spa</i>
+			</button>
+		</div>
+	</div>
+	<div class="mdl-card__actions mdl-typography--text-right">
+		<span class="mdl-typography--caption">Updated: <span
+			class="node-updated">N/A</span></span>
+	</div>
+</div>
+
+<dialog id="dlg-temperature" class="mdl-dialog">
+<h4 class="mdl-dialog__title">Temperature</h4>
+<div class="mdl-dialog__content">
+	<p>Please set the desired temperature.</p>
+	<div
+		class="mdl-textfield mdl-js-textfield">
+		<input class="mdl-textfield__input" type="text"
+			pattern="-?[0-9]*(\.[0-9]+)?" id="desiredtemperature"> <span
+			class="mdl-textfield__error">Input is not a number!</span>
+	</div>
+	<input class="mdl-slider mdl-js-slider" type="range" id="s-desiredtemperature" min="10" max="28" value="10" step="0.5">
+</div>
+<div class="mdl-dialog__actions">
+	<button type="button" class="mdl-button dlg-temperature-close">Cancel</button>
+	<button type="button" class="mdl-button dlg-temperature-save">OK</button>
+</div>
+</dialog>
+<script>
+    var dialog = document.querySelector('#dlg-temperature');
+    var showDialogButton = document.querySelector('#dlg-temperature-show-dialog');
+    if (! dialog.showModal) {
+      dialogPolyfill.registerDialog(dialog);
+    }
+    showDialogButton.addEventListener('click', function() {
+    	$.getJSON("/getdesiredtemperature", function(data) {
+   	      $("#desiredtemperature").val(data.desiredtemperature);
+   	   	  dialog.querySelector('#s-desiredtemperature').MaterialSlider.change(data.desiredtemperature);
+   	      dialog.showModal();
+		});
+    });
+    dialog.querySelector('.dlg-temperature-save').addEventListener('click', function() {
+    	$.ajax({
+   	      method: "POST",
+   	      url: "/setdesiredtemperature",
+   	      dataType: "json",
+   	      data: { desiredtemperature : $("#desiredtemperature").val() }
+   	    }).done(function(response) {
+   	    	$(".desiredtemperature").text($("#desiredtemperature").val());
+   	        dialog.close();
+   	    });
+    });
+    dialog.querySelector('.dlg-temperature-close').addEventListener('click', function() {
+      dialog.close();
+    });
+    dialog.querySelector('#s-desiredtemperature').addEventListener('input', function() {
+    	$("#desiredtemperature").val($("#s-desiredtemperature").val());
+    });
+</script>
+
+<!-- Entrance -->
+<div
+	class="demo-card-square mdl-card mdl-shadow--2dp mdl-cell mdl-cell--4-col node-1">
+	<div class="mdl-card__title">
+		<h2 class="mdl-card__title-text node-name">Loading...</h2>
+		<div class="mdl-layout-spacer"></div>
+		<button
+			class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon"
+			id="node-1-morebtn">
+			<i class="material-icons">more_vert</i>
+		</button>
+		<ul
+			class="mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect"
+			for="node-1-morebtn">
+			<li class="mdl-menu__item">Notifications</li>
+		</ul>
+	</div>
+	<div class="mdl-card__supporting-text mdl-card--expand cpa-thermometer">
+		<div
+			class="mdl-typography--headline mdl-color-text--light-green-500 cpa-degrees topic-1">N/A
+		</div>
+	</div>
+	<div class="mdl-card__actions mdl-typography--text-right">
+		<span class="mdl-typography--caption">Updated: <span
+			class="node-updated">N/A</span></span>
+	</div>
+</div>
+<!-- Kitchen -->
+<div
+	class="demo-card-square mdl-card mdl-shadow--2dp mdl-cell mdl-cell--4-col node-2">
+	<div class="mdl-card__title">
+		<h2 class="mdl-card__title-text node-name">Loading...</h2>
+		<div class="mdl-layout-spacer"></div>
+		<button
+			class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon"
+			id="node-2-morebtn">
+			<i class="material-icons">more_vert</i>
+		</button>
+		<ul
+			class="mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect"
+			for="node-2-morebtn">
+			<li class="mdl-menu__item">Notifications</li>
+		</ul>
+	</div>
+	<div class="mdl-card__supporting-text mdl-card--expand cpa-thermometer">
+		<div
+			class="mdl-typography--headline mdl-color-text--light-green-500 cpa-degrees topic-1">N/A
+		</div>
+		<div class="mdl-typography--subheading mdl-typography--text-right">
+			Relay: <span class="mdl-color-text--blue-700 topic-2">N/A</span>
+		</div>
+	</div>
+	<div class="mdl-card__actions mdl-typography--text-right">
+		<span class="mdl-typography--caption">Updated: <span
+			class="node-updated">N/A</span></span>
+	</div>
+</div>
+<!-- Node 3 -->
+<div style="display:none"
+	class="demo-card-square mdl-card mdl-shadow--2dp mdl-cell mdl-cell--4-col node-3">
+	<div class="mdl-card__title">
+		<h2 class="mdl-card__title-text node-name">Loading...</h2>
+		<div class="mdl-layout-spacer"></div>
+		<button
+			class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon"
+			id="node-3-morebtn">
+			<i class="material-icons">more_vert</i>
+		</button>
+		<ul
+			class="mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect"
+			for="node-3-morebtn">
+			<li class="mdl-menu__item">Notifications</li>
+		</ul>
+	</div>
+	<div class="mdl-card__supporting-text mdl-card--expand cpa-thermometer">
+		<div
+			class="mdl-typography--headline mdl-color-text--light-green-500 cpa-degrees topic-1">N/A
+		</div>
+		<div class="mdl-typography--subheading mdl-typography--text-right">
+			Voltage: <span class="mdl-color-text--blue-700 topic-4">N/A</span>
+		</div>
+	</div>
+	<div class="mdl-card__actions mdl-typography--text-right">
+		<span class="mdl-typography--caption">Updated: <span
+			class="node-updated">N/A</span></span>
+	</div>
+</div>
+<!-- Node 4 -->
+<div style="display:none"
+	class="demo-card-square mdl-card mdl-shadow--2dp mdl-cell mdl-cell--4-col node-7">
+	<div class="mdl-card__title">
+		<h2 class="mdl-card__title-text node-name">Loading...</h2>
+		<div class="mdl-layout-spacer"></div>
+		<button
+			class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon"
+			id="node-4-morebtn">
+			<i class="material-icons">more_vert</i>
+		</button>
+		<ul
+			class="mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect"
+			for="node-4-morebtn">
+			<li class="mdl-menu__item">Notifications</li>
+		</ul>
+	</div>
+	<div class="mdl-card__supporting-text mdl-card--expand cpa-thermometer">
+		<div
+			class="mdl-typography--headline mdl-color-text--light-green-500 cpa-degrees topic-1">N/A
+		</div>
+		<div class="mdl-typography--subheading mdl-typography--text-right">
+			Voltage: <span class="mdl-color-text--blue-700 topic-4">N/A</span>
+		</div>
+	</div>
+	<div class="mdl-card__actions mdl-typography--text-right">
+		<span class="mdl-typography--caption">Updated: <span
+			class="node-updated">N/A</span></span>
+	</div>
+</div>
+<!-- TV Living -->
+<div
+	class="demo-card-square mdl-card mdl-shadow--2dp mdl-cell mdl-cell--4-col node-8">
+	<div class="mdl-card__title">
+		<h2 class="mdl-card__title-text node-name">Loading...</h2>
+		<div class="mdl-layout-spacer"></div>
+		<button
+			class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon"
+			id="node-8-morebtn">
+			<i class="material-icons">more_vert</i>
+		</button>
+		<ul
+			class="mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect"
+			for="node-8-morebtn">
+			<li class="mdl-menu__item">Notifications</li>
+		</ul>
+	</div>
+	<div class="mdl-card__supporting-text mdl-card--expand cpa-tv">
+		<div class="mdl-typography--headline cpa-tv-onoff">
+			<a href="javascript:;" id="tvoff-living"
+				class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--colored mdl-color--red-500 mdl-color-text--white node-toggle"><i
+				class="material-icons">power_settings_new</i></a>
+		</div>
+		<div class="mdl-typography--subheading mdl-typography--text-right">
+			Status: <span class="mdl-color-text--blue-700 topic-5">N/A</span>
+		</div>
+	</div>
+	<div class="mdl-card__actions mdl-typography--text-right">
+		<span class="mdl-typography--caption">Updated: <span
+			class="node-updated">N/A</span></span>
+	</div>
+</div>
+<!-- TV Bedroom -->
+<div
+	class="demo-card-square mdl-card mdl-shadow--2dp mdl-cell mdl-cell--4-col node-9">
+	<div class="mdl-card__title">
+		<h2 class="mdl-card__title-text node-name">Loading...</h2>
+		<div class="mdl-layout-spacer"></div>
+		<button
+			class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon"
+			id="node-9-morebtn">
+			<i class="material-icons">more_vert</i>
+		</button>
+		<ul
+			class="mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect"
+			for="node-9-morebtn">
+			<li class="mdl-menu__item">Notifications</li>
+		</ul>
+	</div>
+	<div class="mdl-card__supporting-text mdl-card--expand cpa-tv">
+		<div class="mdl-typography--headline cpa-tv-onoff">
+			<a href="javascript:;" id="tvoff-bedroom"
+				class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--colored mdl-color--red-500 mdl-color-text--white node-toggle"><i
+				class="material-icons">power_settings_new</i></a>
+		</div>
+		<div class="mdl-typography--subheading mdl-typography--text-right">
+			Status: <span class="mdl-color-text--blue-700 topic-5">N/A</span>
+		</div>
+	</div>
+	<div class="mdl-card__actions mdl-typography--text-right">
+		<span class="mdl-typography--caption">Updated: <span
+			class="node-updated">N/A</span></span>
+	</div>
+</div>
+
+<!-- Weather Sibiu -->
+<div
+	class="demo-card-square mdl-card mdl-shadow--2dp mdl-cell mdl-cell--4-col">
+	<div class="mdl-card__title">
+		<h2 class="mdl-card__title-text node-name">Weather Sibiu</h2>
+	</div>
+	<div class="mdl-card__supporting-text mdl-card--expand cpa-tv">
+<a href="https://www.accuweather.com/en/ro/sibiu/290499/weather-forecast/290499" class="aw-widget-legal">
+<!--
+By accessing and/or using this code snippet, you agree to AccuWeather’s terms and conditions (in English) which can be found at https://www.accuweather.com/en/free-weather-widgets/terms and AccuWeather’s Privacy Statement (in English) which can be found at https://www.accuweather.com/en/privacy.
+-->
+</a><div id="awcc1505221201668" class="aw-widget-current"  data-locationkey="290499" data-unit="c" data-language="en-us" data-useip="false" data-uid="awcc1505221201668"></div><script type="text/javascript" src="https://oap.accuweather.com/launch.js"></script>
+</div>
+</div>

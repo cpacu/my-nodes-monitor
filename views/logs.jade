@@ -1,0 +1,15 @@
+extends layout
+
+block content
+    |<div class="demo-card-square mdl-card mdl-shadow--2dp mdl-cell mdl-cell--12-col">
+    |    <div class="mdl-card__title">
+    |        <h2 class="mdl-card__title-text node-name">Logs</h2>
+    |    </div>
+    |    <div class="mdl-card__supporting-text mdl-card--expand">
+    |    	<div id="logs-container">
+    |    	</div>
+    |    </div>
+    |</div>
+
+block extrajavascript
+    script(src="/js/logs.js")

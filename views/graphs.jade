@@ -1,0 +1,25 @@
+extends layout
+
+block content
+    |<div class="demo-card-square mdl-card mdl-shadow--2dp mdl-cell mdl-cell--12-col">
+    |    <div class="mdl-card__title">
+    |        <h2 class="mdl-card__title-text node-name">Graphs</h2>
+    |    </div>
+    |    <div class="mdl-card__supporting-text mdl-card--expand graphs">
+    |        <div class="graph-container">
+    |            <div>
+    |                Node: <select class="graph-selector-node"><option>Loading...</option></select>
+    |                Topic: <select class="graph-selector-topic"><option>Loading...</option></select>
+    |Interval: <select class="graph-selector-interval"><option value="4320">3 days</option><option value="1440" selected>1 day</option><option value="360">6 hours</option><option value="60">1 hour</option></select>
+    |            </div>
+    |            <div class="mdl-spinner mdl-spinner--single-color mdl-js-spinner is-active" style="display:none;"></div>
+    |			 <div id="chart1" style="height:300px; width:auto; margin-top:10px;"></div>
+    |        </div>
+    |    </div>
+    |</div>
+
+block extrajavascript
+    script(src="/js/graphs.js")
+    script(src="/js/jquery.jqplot.min.js")
+    script(src="/js/jqplot.json2.js")
+    script(src="/js/jqplot.dateAxisRenderer.js")    
