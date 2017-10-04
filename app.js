@@ -3,25 +3,14 @@ var path = require('path');
 var logger = require('./log');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
-var mysql = require("mysql");
 var socket_io = require( "socket.io" );
 var php = require('express-php');
 var exec =  require('child_process').exec;
 var authentication = require('express-authentication');
 var fs = require('fs');
-
-/* Creating POOL MySQL connection.*/
-var pool = mysql.createPool({
-      connectionLimit   :   100,
-      host              :   'localhost',
-      user              :   'monitor',
-      password          :   'password',
-      database          :   'sensordata',
-      debug             :   false
-});
+var pool = require('./bin/mysql-connect');
 
 var index_route = require('./routes/index');
-//var users_route = require('./routes/users');
 var login_route = require('./routes/login');
 var graphs_route = require('./routes/graphs');
 var logs_route = require('./routes/logs');
@@ -31,6 +20,9 @@ var app = express();
 // Socket.io
 var io           = socket_io();
 app.io           = io;
+
+var ping_status = require('./bin/ping-status')(io);
+var udpserver = require('./bin/udpserver')(io);
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -416,128 +408,6 @@ app.use(function(err, req, res, next) {
   res.status(err.status || 500);
   res.render('error');
 });
-
-var udp = require('dgram');
-
-/** 
- * Creating a udp server
-*/
-
-// creating a udp server
-var udpserver = udp.createSocket('udp4');
-
-// emits when any error occurs
-udpserver.on('error',function(error){
-  console.log('UDP Server error: ' + error);
-//  udpserver.close();
-});
-
-// emits on new datagram msg
-udpserver.on('message',function(msg,info){
-//  console.log('UDP data received from client : ' + msg.toString());
-//  console.log('UDP received %d bytes from %s:%d\n',msg.length, info.address, info.port);
-  
-  if (msg.length == 0)
-	  return;
-  
-  var regexp = /^{"from_node":([^,]+),"to_node":([^,]+),"topic":([^,]+),"payload":([^,]+),"payload_type":([^,]+)}([^{]*)$/;
-  var matches_array = msg.toString().match(regexp);
-
-  if (matches_array != null) {
-	  pool.getConnection(function(err,connection){
-	        if (err) {
-	          return;
-	        }
-	        
-	        var mysqlquery = "INSERT INTO s_current_data (node, topic, payload, payload_type, updated) VALUES ('" 
-	        	+ matches_array[1] + "','" + matches_array[3] + "','" + matches_array[4] + "','" + matches_array[5] + "',now()) ON DUPLICATE KEY UPDATE payload=VALUES(payload),updated=now()";
-	        
-			connection.query(mysqlquery, function(err,rows){
-	            connection.release();
-	            if(!err) {
-	            	//All OK
-//	            	console.log("Success!");
-//	          	  	console.log(matches_array);
-	            	var d = new Date();
-	            	var datestring = d.getFullYear() + "-" + ("0"+(d.getMonth()+1)).slice(-2) + "-" + ("0" + d.getDate()).slice(-2)
-	                	 + " " + ("0" + d.getHours()).slice(-2) + ":" + ("0" + d.getMinutes()).slice(-2) + ":" + ("0" + d.getSeconds()).slice(-2);
-	            	var row = {
-						node : matches_array[1],
-						topic : matches_array[3],
-						payload : matches_array[4],
-						payload_type : matches_array[5],
-						updated : datestring
-					};
-	            	io.emit('do-sensor-data-update-all', { result: [row] });
-	            }
-				else {
-		            console.log("UDP Server data could not be inserted! Query:" + mysqlquery);
-				}
-	        });
-	    });	
-	  
-	  
-  }
-});
-
-//emits when socket is ready and listening for datagram msgs
-udpserver.on('listening',function(){
-  var address = udpserver.address();
-  var port = address.port;
-  var family = address.family;
-  var ipaddr = address.address;
-  console.log('UDP Server is listening at port' + port);
-  console.log('UDP Server ip :' + ipaddr);
-  console.log('UDP Server is IP4/IP6 : ' + family);
-});
-
-udpserver.bind(54345);
-
-//PING TV1 and TV2
-var ping = require('ping');
-
-var hosts = [{node:'8',ip:'192.168.1.101'}, {node:'9',ip:'192.168.1.102'}];
-function samsung_tv_status() {
-	hosts.forEach(function(host){
-	    ping.sys.probe(host.ip, function(isAlive){
-//	        var msg = isAlive ? 'host ' + host.ip + ' is alive' : 'host ' + host.ip + ' is dead';
-//	        console.log(msg);
-	    	
-	        var payload_to_insert = isAlive ? '1' : '0';
-	        pool.getConnection(function(err,connection){
-		        if (err) {
-		          return;
-		        }
-		        
-		        var mysqlquery = "INSERT INTO s_current_data (node, topic, payload, payload_type, updated) VALUES ('"
-		        	+ host.node + "','5','" + payload_to_insert + "','1',now()) ON DUPLICATE KEY UPDATE payload=VALUES(payload),updated=now()";
-		        
-				connection.query(mysqlquery, function(err,rows){
-		            connection.release();
-		            if(!err) {
-		            	var d = new Date();
-		            	var datestring = d.getFullYear() + "-" + ("0"+(d.getMonth()+1)).slice(-2) + "-" + ("0" + d.getDate()).slice(-2)
-		                	 + " " + ("0" + d.getHours()).slice(-2) + ":" + ("0" + d.getMinutes()).slice(-2) + ":" + ("0" + d.getSeconds()).slice(-2);
-		            	var row = {
-							node : host.node,
-							topic : 5,
-							payload : payload_to_insert,
-							payload_type : 1,
-							updated : datestring
-						};
-		            	io.emit('do-sensor-data-update-all', { result: [row] });
-		            }
-					else {
-			            console.log("PING data could not be inserted! Query:" + mysqlquery);
-					}
-		        });
-		    }); 	
-	    },{
-	        timeout: 1
-	    });
-	});
-}
-setInterval(samsung_tv_status, 30000);
 
 //var Tail = require('always-tail');
 //var tail_filename = "/var/www/nodejs/my-nodes-monitor/debug.log";
